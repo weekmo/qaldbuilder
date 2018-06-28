@@ -6,6 +6,7 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonBuilder;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
+import org.apache.jena.ext.com.google.common.util.concurrent.ExecutionError;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.ResultSetFormatter;
@@ -17,7 +18,8 @@ import org.apache.jena.query.ResultSetFormatter;
 public class QaldBuilder {
 	JsonObject qaldFormat,questionObject;
 	JsonBuilder jsonBuilder;
-	String query;
+	String query,lang,questionString;
+	int id;
 	/**
 	 * Constructor adds empty dataset object and questions array.
 	 */
@@ -30,6 +32,9 @@ public class QaldBuilder {
 		.finishObject();
 		qaldFormat = jsonBuilder.build().getAsObject();
 		this.questionObject = this.qaldFormat.get("questions").getAsArray().get(0).getAsObject();
+		this.query=null;
+		this.questionString=null;
+		this.lang=null;
 	}
 	
 	/**
@@ -40,7 +45,24 @@ public class QaldBuilder {
 		this.questionObject=JSON.parse(question);
 		this.remove("_id");
 		
-		this.setQuery(this.questionObject.get("query").getAsObject().get("sparql").toString());
+		if(this.questionObject.hasKey("question")) {
+			if(!this.questionObject.get("question").getAsArray().isEmpty()) {
+				this.questionString = this.questionObject.get("question").getAsArray().get(0).getAsObject().get("string").toString().trim().replace("\"", "");
+				this.lang = this.questionObject.get("question").getAsArray().get(0).getAsObject().get("language").toString();
+				
+				this.setQuestionString(this.questionString, lang);
+			}
+		}
+		
+		if(this.questionObject.hasKey("id")) {
+			this.id = Integer.parseInt(this.questionObject.get("id").toString());
+			this.setID(this.id);
+		}
+		
+		if(this.questionObject.hasKey("query")) {
+			this.query = this.questionObject.get("query").getAsObject().get("sparql").toString().trim();
+			this.setQuery(this.query);
+		}
 	}
 	
 	public void setQuery(String query) {
@@ -64,20 +86,22 @@ public class QaldBuilder {
 	 * Set answer(s) by retrieving info from sparql service
 	 * @param sparqlService
 	 */
-	public void setAnswers(String sparqlService) {
+	public void setAnswers(String sparqlService) throws ExecutionError{
 		if(this.questionObject.hasKey("answers"))
 			this.questionObject.remove("answers");
-		//"http://dbpedia.org/sparql"
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(sparqlService, query);
-		//qexec.setTimeout(2000);
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		
-		if(query.startsWith("ASK WHERE")) {
-			ResultSetFormatter.outputAsJSON(outputStream, qexec.execAsk());
-		}else {
-			ResultSetFormatter.outputAsJSON(outputStream,qexec.execSelect());
-		}
-		this.questionObject.put("answers", JSON.parse(outputStream.toString()));
+		try {
+			//"http://dbpedia.org/sparql"
+			QueryExecution qexec = QueryExecutionFactory.sparqlService(sparqlService, query);
+			//qexec.setTimeout(2000);
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			
+			if(query.startsWith("ASK WHERE")) {
+				ResultSetFormatter.outputAsJSON(outputStream, qexec.execAsk());
+			}else {
+				ResultSetFormatter.outputAsJSON(outputStream,qexec.execSelect());
+			}
+			this.questionObject.put("answers", JSON.parse(outputStream.toString()));
+		}catch(ExecutionError ex) {throw ex;}
 	}
 	
 	/**
@@ -165,6 +189,29 @@ public class QaldBuilder {
 		this.questionObject.put(key, value);
 	}
 	
+	public String getQuery() {
+		if(this.questionObject.hasKey("query"))
+			return this.query;
+		return null;
+	}
+	
+	public int getID() {
+		if(this.questionObject.hasKey("id"))
+			return Integer.parseInt(this.questionObject.get("id").toString());
+		return -1;
+	}
+	
+	public String getQuestionString() {
+		if(this.questionObject.hasKey("question"))
+			return this.questionObject.get("question").getAsArray().get(0).getAsObject().get("string").toString();
+		return null;
+	}
+	
+	public String getQuestionLanguage() {
+		if(this.questionObject.get("question").getAsArray().get(0).getAsObject().hasKey("language"))
+			return this.questionObject.get("question").getAsArray().get(0).getAsObject().get("language").toString();
+		return null;
+	}
 	
 	/**
 	 * Get all question info as Qald format
