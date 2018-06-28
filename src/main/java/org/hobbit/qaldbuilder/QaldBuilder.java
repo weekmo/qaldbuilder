@@ -18,7 +18,7 @@ import org.apache.jena.query.ResultSetFormatter;
 public class QaldBuilder {
 	JsonObject qaldFormat,questionObject;
 	JsonBuilder jsonBuilder;
-	String query,lang,questionString;
+	String query,lang,questionString,datasetID;
 	int id;
 	/**
 	 * Constructor adds empty dataset object and questions array.
@@ -35,10 +35,12 @@ public class QaldBuilder {
 		this.query=null;
 		this.questionString=null;
 		this.lang=null;
+		this.datasetID=null;
+		this.id = -1;
 	}
 	
 	/**
-	 * Set current qald question as a start
+	 * Set current qald question as a start, without dataset ID and questions array
 	 * @param question: in json format as a String
 	 */
 	public void setQuestionAsJson(String question) {
@@ -54,15 +56,11 @@ public class QaldBuilder {
 			}
 		}
 		
-		if(this.questionObject.hasKey("id")) {
-			this.id = Integer.parseInt(this.questionObject.get("id").toString());
-			this.setID(this.id);
-		}
+		if(this.questionObject.hasKey("id"))
+			this.setID(Integer.parseInt(this.questionObject.get("id").toString()));
 		
-		if(this.questionObject.hasKey("query")) {
-			this.query = this.questionObject.get("query").getAsObject().get("sparql").toString().trim();
-			this.setQuery(this.query);
-		}
+		if(this.questionObject.hasKey("query"))
+			this.setQuery(this.questionObject.get("query").getAsObject().get("sparql").toString());
 	}
 	
 	public void setQuery(String query) {
@@ -118,6 +116,8 @@ public class QaldBuilder {
 			.key("language").value(language)
 		.finishObject().finishArray();
 		this.questionObject.put("question", jsonBuilder.build());
+		this.questionString = question;
+		this.lang = language;
 	}
 	
 	public void setHybrid(String value) {
@@ -146,6 +146,7 @@ public class QaldBuilder {
 		if(this.questionObject.hasKey("id"))
 			this.questionObject.remove("id");
 		this.questionObject.put("id", value);
+		this.id=value;
 	}
 	
 	/**
@@ -153,8 +154,10 @@ public class QaldBuilder {
 	 * @param id
 	 */
 	public void setDatasetID(String id) {
-		if(this.qaldFormat.get("dataset").getAsObject().hasKey("id"))
-			this.qaldFormat.get("dataset").getAsObject().remove("id");
+		if(this.qaldFormat.hasKey("dataset"))
+			if(this.qaldFormat.get("dataset").getAsObject().hasKey("id"))
+				this.qaldFormat.get("dataset").getAsObject().remove("id");
+		this.datasetID = id;
 		this.qaldFormat.get("dataset").getAsObject().put("id", id);
 	}
 	
@@ -190,27 +193,23 @@ public class QaldBuilder {
 	}
 	
 	public String getQuery() {
-		if(this.questionObject.hasKey("query"))
-			return this.query;
-		return null;
+		return this.query;
 	}
 	
 	public int getID() {
-		if(this.questionObject.hasKey("id"))
-			return Integer.parseInt(this.questionObject.get("id").toString());
-		return -1;
+		return this.id;
 	}
 	
 	public String getQuestionString() {
-		if(this.questionObject.hasKey("question"))
-			return this.questionObject.get("question").getAsArray().get(0).getAsObject().get("string").toString();
-		return null;
+		return this.questionString;
 	}
 	
 	public String getQuestionLanguage() {
-		if(this.questionObject.get("question").getAsArray().get(0).getAsObject().hasKey("language"))
-			return this.questionObject.get("question").getAsArray().get(0).getAsObject().get("language").toString();
-		return null;
+		return this.lang;
+	}
+	
+	public String getDatasetID() {
+		return this.datasetID;
 	}
 	
 	/**
