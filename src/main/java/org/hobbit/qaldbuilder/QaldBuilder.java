@@ -23,11 +23,6 @@ public class QaldBuilder {
 		.finishObject();
 		qaldFormat = jsonBuilder.build().getAsObject();
 		this.questionObject = this.qaldFormat.get("questions").getAsArray().get(0).getAsObject();
-		/*
-		this.setAggregation(true);
-		this.setHybrid("false");
-		this.setOnlydbo(true);
-		*/
 	}
 	
 	public void setQuestionAsJson(String question) {
@@ -102,6 +97,12 @@ public class QaldBuilder {
 		if(this.questionObject.hasKey("id"))
 			this.questionObject.remove("id");
 		this.questionObject.put("id", value);
+	}
+	
+	public void setDatasetID(String id) {
+		if(this.qaldFormat.get("dataset").getAsObject().hasKey("id"))
+			this.qaldFormat.get("dataset").getAsObject().remove("id");
+		this.qaldFormat.get("dataset").getAsObject().put("id", id);
 	}
 	
 	public String getQaldQuestion() {
