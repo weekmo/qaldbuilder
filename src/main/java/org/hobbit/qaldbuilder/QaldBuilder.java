@@ -39,6 +39,13 @@ public class QaldBuilder {
 		this.id = -1;
 	}
 	
+	public QaldBuilder(String qaldFormat) {
+		jsonBuilder = new JsonBuilder();
+		this.qaldFormat=JSON.parse(qaldFormat);
+		this.setQuestionAsJson(this.qaldFormat.get("questions").getAsArray().get(0).getAsObject().toString());
+		this.setDatasetID(this.qaldFormat.get("dataset").getAsObject().get("id").toString().trim().replace("\"", ""));
+	}
+	
 	/**
 	 * Set current qald question as a start, without dataset ID and questions array
 	 * @param question: in json format as a String
