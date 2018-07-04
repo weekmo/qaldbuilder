@@ -73,7 +73,8 @@ public class QaldBuilder {
 	public void setQuery(String query) {
 		query = query.trim().replace("\"", "");
 		this.removeQuery();
-		this.questionObject.put("query", query);
+		this.jsonBuilder.startObject().key("sparql").value(query).finishObject();
+		this.questionObject.put("query", this.jsonBuilder.build());
 		this.query=query;
 	}
 	
@@ -92,8 +93,7 @@ public class QaldBuilder {
 	 * @param sparqlService
 	 */
 	public void setAnswers(String sparqlService) throws ExecutionError{
-		if(this.questionObject.hasKey("answers"))
-			this.questionObject.remove("answers");
+		this.removeAnswers();
 		try {
 			//"http://dbpedia.org/sparql"
 			QueryExecution qexec = QueryExecutionFactory.sparqlService(sparqlService, query);
@@ -105,7 +105,7 @@ public class QaldBuilder {
 			}else {
 				ResultSetFormatter.outputAsJSON(outputStream,qexec.execSelect());
 			}
-			this.questionObject.put("answers", JSON.parse(outputStream.toString()));
+			this.setAnswers(JSON.parse(outputStream.toString()));
 		}catch(ExecutionError ex) {throw ex;}
 	}
 	
