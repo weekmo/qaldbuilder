@@ -42,8 +42,11 @@ public class QaldBuilder {
 	public QaldBuilder(String qaldFormat) {
 		jsonBuilder = new JsonBuilder();
 		this.qaldFormat=JSON.parse(qaldFormat);
-		this.setQuestionAsJson(this.qaldFormat.get("questions").getAsArray().get(0).getAsObject().toString());
-		this.setDatasetID(this.qaldFormat.get("dataset").getAsObject().get("id").toString().trim().replace("\"", ""));
+		if(this.qaldFormat.hasKey("questions"))
+			this.setQuestionAsJson(this.qaldFormat.get("questions").getAsArray().get(0).getAsObject().toString());
+		if(this.qaldFormat.hasKey("dataset"))
+			if(this.qaldFormat.get("dataset").getAsObject().hasKey("id"))
+				this.setDatasetID(this.qaldFormat.get("dataset").getAsObject().get("id").toString());
 	}
 	
 	/**
@@ -128,6 +131,7 @@ public class QaldBuilder {
 	}
 	
 	public void setHybrid(String value) {
+		value = value.trim().replace("\"", "");
 		if(this.questionObject.hasKey("hybrid"))
 			this.questionObject.remove("hybrid");
 		this.questionObject.put("hybrid", value);
@@ -161,6 +165,7 @@ public class QaldBuilder {
 	 * @param id
 	 */
 	public void setDatasetID(String id) {
+		id=id.trim().replace("\"", "");
 		if(this.qaldFormat.hasKey("dataset"))
 			if(this.qaldFormat.get("dataset").getAsObject().hasKey("id"))
 				this.qaldFormat.get("dataset").getAsObject().remove("id");
