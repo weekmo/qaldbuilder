@@ -1,9 +1,8 @@
 /bin/
-
 /target/
-
 /.get/
 .classpath
 .gitignore
 /data/
 /.settings/
+.project
