@@ -1,3 +1,5 @@
+
+[![license - APACHE-2.0](https://img.shields.io/npm/l/foxx-cli.svg?style=flat-square)](http://opensource.org/licenses/APACHE-2.0)
 # QaldBuilder is a class to handle qald question format easily.
 
 ## How to use it with maven:
