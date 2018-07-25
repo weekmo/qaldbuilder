@@ -1,8 +1,10 @@
 package org.hobbit.qaldbuilder;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 import org.apache.jena.atlas.json.JSON;
+import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonBuilder;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
@@ -10,16 +12,17 @@ import org.apache.jena.ext.com.google.common.util.concurrent.ExecutionError;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.ResultSetFormatter;
+
 /**
  * 
  * @author Mohammed Abdelgadir, github.com/weekmo
  *
  */
 public class QaldBuilder {
-	JsonObject qaldFormat,questionObject;
-	JsonBuilder jsonBuilder;
-	String query,lang,questionString,datasetID;
-	int id;
+	private JsonObject qaldFormat,questionObject;
+	private JsonBuilder jsonBuilder;
+	private String query,lang,questionString,datasetID;
+	private int id;
 	/**
 	 * Constructor adds empty dataset object and questions array.
 	 */
@@ -60,7 +63,7 @@ public class QaldBuilder {
 		if(this.questionObject.hasKey("question")) {
 			if(!this.questionObject.get("question").getAsArray().isEmpty()) {
 				this.questionString = this.questionObject.get("question").getAsArray().get(0).getAsObject().get("string").toString().trim().replace("\"", "");
-				this.lang = this.questionObject.get("question").getAsArray().get(0).getAsObject().get("language").toString();
+				this.lang = this.questionObject.get("question").getAsArray().get(0).getAsObject().get("language").toString().trim().replace("\"", "");
 				
 				this.setQuestionString(this.questionString, lang);
 			}
@@ -223,7 +226,23 @@ public class QaldBuilder {
 	public String getDatasetID() {
 		return this.datasetID;
 	}
-	
+	public ArrayList<String> getAnswers(){
+		if(this.questionObject.hasKey("answers")) {
+			ArrayList<String> answers= new ArrayList<String>();
+			JsonObject answer = this.questionObject.get("answers").getAsArray().get(0).getAsObject();
+			if(answer.hasKey("boolean")) {
+				answers.add(answer.get("boolean").toString());
+			}
+			else if(answer.hasKey("results")) {
+				JsonArray arrAnswers= answer.get("results").getAsObject().get("bindings").getAsArray();
+				for(int i=0;i<arrAnswers.size();i++) {
+					answers.add(arrAnswers.get(i).getAsObject().values().iterator().next().getAsObject().get("value").toString());
+				}
+			}
+			return answers;
+		}
+		return null;
+	}
 	/**
 	 * Get all question info as Qald format
 	 * @return
