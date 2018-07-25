@@ -6,10 +6,29 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   <artifactId>qaldbuilder</artifactId>
   <version>1.1.0</version>
   <packaging>jar</packaging>
+  <name>Qald Builder</name>
+  <description>Handing Qald question format easily</description>
+  <url>https://github.com/weekmo/qaldbuilder</url>
+  <developers>
+  	<developer>
+  		<id>weekmo</id>
+  		<name>Mohammed Abdelgadir</name>
+  		<organization>Fraunhofer IAIS</organization>
+  		<organizationUrl>https://www.iais.fraunhofer.de/en.html</organizationUrl>
+  		<url>https://www.linkedin.com/in/weekmo/</url>
+	</developer>
+  </developers>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
+  <licenses>
+	  <license>
+	    <name>Apache License, Version 2.0</name>
+	    <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+	    <distribution>repo</distribution>
+	    <comments>A business-friendly OSS license</comments>
+	  </license>
+  </licenses>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
