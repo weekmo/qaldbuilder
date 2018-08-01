@@ -8,13 +8,23 @@ public class TestClass {
 		qa.setQuestionAsJson(getQuestion());
 		//System.out.println(qa.getQaldQuestion());
 		qa.setDatasetID("test");
-		qa.setAnswers("http://dbpedia.org/sparql");
-		if(qa.getAnswers()!=null)
-			for(String ans:qa.getAnswers()) {
-				System.out.println(ans);
-			}
-		else
-			System.out.println(qa.getQaldQuestion());
+		try {
+			qa.setAnswers("http://dbpedia.org/sparql");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			if(qa.getAnswers()!=null)
+				for(String ans:qa.getAnswers()) {
+					System.out.println(ans);
+				}
+			else
+				System.out.println(qa.getQaldQuestion());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println(qa.getQaldQuestion());
 		//JsonObject json = JSON.parse(qa.getQaldQuestion());
 		//System.out.println(json.get("questions").getAsArray().get(0).getAsObject().get("answers").getAsArray().get(0).getAsObject().hasKey("boolean"));

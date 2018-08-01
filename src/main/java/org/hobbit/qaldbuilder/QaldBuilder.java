@@ -8,7 +8,6 @@ import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonBuilder;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
-import org.apache.jena.ext.com.google.common.util.concurrent.ExecutionError;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.ResultSetFormatter;
@@ -98,7 +97,7 @@ public class QaldBuilder {
 	 * Set answer(s) by retrieving info from sparql service
 	 * @param sparqlService
 	 */
-	public void setAnswers(String sparqlService) throws ExecutionError{
+	public void setAnswers(String sparqlService) throws Exception{
 		this.removeAnswers();
 		try {
 			//"http://dbpedia.org/sparql"
@@ -112,7 +111,7 @@ public class QaldBuilder {
 				ResultSetFormatter.outputAsJSON(outputStream,qexec.execSelect());
 			}
 			this.setAnswers(JSON.parse(outputStream.toString()));
-		}catch(ExecutionError ex) {throw ex;}
+		}catch(Exception ex) {throw ex;}
 	}
 	
 	/**
@@ -226,8 +225,9 @@ public class QaldBuilder {
 	public String getDatasetID() {
 		return this.datasetID;
 	}
-	public ArrayList<String> getAnswers(){
+	public ArrayList<String> getAnswers() throws Exception{
 		ArrayList<String> answers= new ArrayList<String>();
+		try {
 		if(this.questionObject.hasKey("answers")) {
 			JsonObject answer = this.questionObject.get("answers").getAsArray().get(0).getAsObject();
 			if(answer.hasKey("boolean")) {
@@ -240,6 +240,7 @@ public class QaldBuilder {
 				}
 			}
 		}
+		}catch(Exception ex) {throw ex;}
 		return answers;
 	}
 	/**
