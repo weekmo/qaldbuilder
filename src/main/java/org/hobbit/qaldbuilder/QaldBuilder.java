@@ -227,8 +227,8 @@ public class QaldBuilder {
 		return this.datasetID;
 	}
 	public ArrayList<String> getAnswers(){
+		ArrayList<String> answers= new ArrayList<String>();
 		if(this.questionObject.hasKey("answers")) {
-			ArrayList<String> answers= new ArrayList<String>();
 			JsonObject answer = this.questionObject.get("answers").getAsArray().get(0).getAsObject();
 			if(answer.hasKey("boolean")) {
 				answers.add(answer.get("boolean").toString());
@@ -239,9 +239,8 @@ public class QaldBuilder {
 					answers.add(arrAnswers.get(i).getAsObject().values().iterator().next().getAsObject().get("value").toString());
 				}
 			}
-			return answers;
 		}
-		return null;
+		return answers;
 	}
 	/**
 	 * Get all question info as Qald format
