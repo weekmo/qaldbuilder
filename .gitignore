@@ -1,8 +1,8 @@
-/bin/
-/target/
-/.get/
+.get/
+.settings/
+bin/
+data/
+target/
 .classpath
 .gitignore
-/data/
-/.settings/
 .project
