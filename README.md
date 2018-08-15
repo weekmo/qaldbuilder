@@ -28,7 +28,7 @@
 ## Examples:
 ### Example 1:
 ```java
-import org.hobbit.qaldbuilder.QaldBuilder;
+import org.hobbit.QaldBuilder;
 public class Test {
   public static void main(String[] args) {
     String sparqlQuery="SELECT DISTINCT ?ans Where {<http://dbpedia.org/resource/Stirling_Castle> <http://dbpedia.org/ontology/builder> ?x . ?x <http://dbpedia.org/ontology/birthPlace> ?ans}";

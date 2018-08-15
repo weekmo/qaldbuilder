@@ -1,4 +1,4 @@
-package org.hobbit.qaldbuilder;
+package org.hobbit;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
