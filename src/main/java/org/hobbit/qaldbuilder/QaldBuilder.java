@@ -13,8 +13,10 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.ResultSetFormatter;
 
 /**
- * 
- * @author Mohammed Abdelgadir, github.com/weekmo
+ * QaldBuilder manages Qald questions with useful function<br/>
+ * github.com/weekmo
+ * @author Mohammed Abdelgadir
+ * @version 1.1.0
  *
  */
 public class QaldBuilder {
@@ -23,7 +25,7 @@ public class QaldBuilder {
 	private String query,lang,questionString,datasetID;
 	private int id;
 	/**
-	 * Constructor adds empty dataset object and questions array.
+	 * A constructor adds empty data set object and empty questions array.
 	 */
 	public QaldBuilder() {
 		jsonBuilder = new JsonBuilder();
@@ -40,7 +42,11 @@ public class QaldBuilder {
 		this.datasetID=null;
 		this.id = -1;
 	}
-	
+	/**
+	 * A constructor takes Qald formated question as a parameter
+	 * @param qaldFormat : Qald Formated Question
+	 * 
+	 */
 	public QaldBuilder(String qaldFormat) {
 		jsonBuilder = new JsonBuilder();
 		this.qaldFormat=JSON.parse(qaldFormat);
@@ -52,8 +58,8 @@ public class QaldBuilder {
 	}
 	
 	/**
-	 * Set current qald question as a start, without dataset ID and questions array
-	 * @param question: in json format as a String
+	 * Set current Qald formated question
+	 * @param question : Qald formated question
 	 */
 	public void setQuestionAsJson(String question) {
 		this.questionObject=JSON.parse(question);
@@ -75,6 +81,10 @@ public class QaldBuilder {
 			this.setQuery(this.questionObject.get("query").getAsObject().get("sparql").toString());
 	}
 	
+	/**
+	 * Set question query
+	 * @param query
+	 */
 	public void setQuery(String query) {
 		query = query.trim().replace("\"", "");
 		this.removeQuery();
@@ -84,7 +94,7 @@ public class QaldBuilder {
 	}
 	
 	/**
-	 * Set answer as json object
+	 * Set answer as Json object
 	 * @param answers
 	 */
 	public void setAnswers(JsonObject answers) {
@@ -95,7 +105,7 @@ public class QaldBuilder {
 	
 	/**
 	 * Set answer(s) by retrieving info from sparql service
-	 * @param sparqlService
+	 * @param sparqlService : Sparql service url
 	 */
 	public void setAnswers(String sparqlService) throws Exception{
 		this.removeAnswers();
@@ -116,7 +126,7 @@ public class QaldBuilder {
 	
 	/**
 	 * Set question string and language
-	 * @param question
+	 * @param question : human readable question as string
 	 * @param language
 	 */
 	public void setQuestionString(String question,String language) {
@@ -131,6 +141,7 @@ public class QaldBuilder {
 		this.questionString = question;
 		this.lang = language;
 	}
+	
 	
 	public void setHybrid(String value) {
 		value = value.trim().replace("\"", "");
@@ -225,6 +236,12 @@ public class QaldBuilder {
 	public String getDatasetID() {
 		return this.datasetID;
 	}
+	
+	/**
+	 * Get answers as {@code ArrayList<Stirng>}
+	 * @return List of questions
+	 * @throws Exception
+	 */
 	public ArrayList<String> getAnswers() throws Exception{
 		ArrayList<String> answers= new ArrayList<String>();
 		try {
@@ -245,7 +262,7 @@ public class QaldBuilder {
 	}
 	/**
 	 * Get all question info as Qald format
-	 * @return
+	 * @return Qald formated question
 	 */
 	public String getQaldQuestion() {
 		this.qaldFormat.get("questions").getAsArray().clear();
