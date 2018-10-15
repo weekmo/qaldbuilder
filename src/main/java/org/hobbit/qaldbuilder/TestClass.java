@@ -9,6 +9,7 @@ public class TestClass {
 		qa.setQuery("Test query");
 		qa.setTriple(2);
 		qa.setQuery("test2", 4);
+		qa.removeTriple();
 		System.out.println(qa.getQaldQuestion());
 	}
 	public static String getQaldFormat() {

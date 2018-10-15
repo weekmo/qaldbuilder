@@ -60,7 +60,7 @@ public class QaldBuilder {
 	
 	/**
 	 * Set current Qald formated question
-	 * @param question : Qald formated question
+	 * @param questionAsString : Qald formated question
 	 */
 	public void setQuestionAsJson(String questionAsString) {
 		this.questionObject=JSON.parse(questionAsString);
@@ -81,15 +81,12 @@ public class QaldBuilder {
 		
 		if(this.questionObject.hasKey("query")) {
 			JsonObject query = this.questionObject.get("query").getAsObject();
-			if(query.hasKey("sparql"))
+			if(query.hasKey("sparql")) {
 				this.setQuery(query.get("sparql").toString());
-			
-			if(query.hasKey("NumberOfTriples")) {
-				this.triple = Integer.parseInt(this.questionObject.get("query").getAsObject().get("NumberOfTriples").toString());
-				this.setTriple(this.triple);
+				if(query.hasKey("NumberOfTriples"))
+					this.setTriple(Integer.parseInt(query.get("NumberOfTriples").toString()));
 			}
 		}
-		// Add other props
 	}
 	
 	/**
