@@ -107,6 +107,8 @@ public class QaldBuilder {
 		if(this.questionObject.hasKey("query")) {
 			this.questionObject.get("query").getAsObject().put("NumberOfTriples", triple);
 			this.triple = triple;
+		}else {
+			throw new JsonException("There is no query yet!");
 		}
 	}
 	
