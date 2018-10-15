@@ -6,32 +6,10 @@ import org.hobbit.QaldBuilder;
 public class TestClass {
 	public static void main(String[] args) {
 		QaldBuilder qa = new QaldBuilder(getQaldFormat());
-		qa.setQuestionAsJson(getQuestion());
-		//System.out.println(qa.getQaldQuestion());
-		qa.setDatasetID("test");
-		try {
-			qa.setAnswers("http://dbpedia.org/sparql");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			if(qa.getAnswers()!=null)
-				for(String ans:qa.getAnswers()) {
-					System.out.println(ans);
-				}
-			else
-				System.out.println(qa.getQaldQuestion());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		qa.setQuery("Test query");
+		qa.setTriple(2);
+		qa.setQuery("test2", 4);
 		System.out.println(qa.getQaldQuestion());
-		//JsonObject json = JSON.parse(qa.getQaldQuestion());
-		//System.out.println(json.get("questions").getAsArray().get(0).getAsObject().get("answers").getAsArray().get(0).getAsObject().hasKey("boolean"));
-		//qa.removeAnswers();
-		//qa.removeQuery();
-		//System.out.println("\n\n"+qa.getQaldQuestion());
 	}
 	public static String getQaldFormat() {
 		return JSON.read("data/qald_format.json").toString();

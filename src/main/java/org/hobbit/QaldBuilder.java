@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonBuilder;
+import org.apache.jena.atlas.json.JsonException;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 import org.apache.jena.query.QueryExecution;
@@ -23,7 +24,7 @@ public class QaldBuilder {
 	private JsonObject qaldFormat,questionObject;
 	private JsonBuilder jsonBuilder;
 	private String query,lang,questionString,datasetID;
-	private int id;
+	private int id,triple;
 	/**
 	 * A constructor adds empty data set object and empty questions array.
 	 */
@@ -31,16 +32,16 @@ public class QaldBuilder {
 		jsonBuilder = new JsonBuilder();
 		jsonBuilder.startObject()
 			.key("dataset").startObject().finishObject()
-			.key("questions").startArray()
-				.startObject().finishObject().finishArray()
+			.key("questions").startArray().finishArray()
 		.finishObject();
 		qaldFormat = jsonBuilder.build().getAsObject();
-		this.questionObject = this.qaldFormat.get("questions").getAsArray().get(0).getAsObject();
+		this.questionObject = new JsonObject();
 		this.query=null;
 		this.questionString=null;
 		this.lang=null;
 		this.datasetID=null;
 		this.id = -1;
+		this.triple=-1;
 	}
 	/**
 	 * A constructor takes Qald formated question as a parameter
@@ -48,7 +49,7 @@ public class QaldBuilder {
 	 * 
 	 */
 	public QaldBuilder(String qaldFormat) {
-		jsonBuilder = new JsonBuilder();
+		this();
 		this.qaldFormat=JSON.parse(qaldFormat);
 		if(this.qaldFormat.hasKey("questions"))
 			this.setQuestionAsJson(this.qaldFormat.get("questions").getAsArray().get(0).getAsObject().toString());
@@ -61,24 +62,34 @@ public class QaldBuilder {
 	 * Set current Qald formated question
 	 * @param question : Qald formated question
 	 */
-	public void setQuestionAsJson(String question) {
-		this.questionObject=JSON.parse(question);
+	public void setQuestionAsJson(String questionAsString) {
+		this.questionObject=JSON.parse(questionAsString);
 		this.remove("_id");
 		
 		if(this.questionObject.hasKey("question")) {
-			if(!this.questionObject.get("question").getAsArray().isEmpty()) {
-				this.questionString = this.questionObject.get("question").getAsArray().get(0).getAsObject().get("string").toString().trim().replace("\"", "");
-				this.lang = this.questionObject.get("question").getAsArray().get(0).getAsObject().get("language").toString().trim().replace("\"", "");
+			JsonArray question = this.questionObject.get("question").getAsArray();
+			if(!question.isEmpty()) {
+				this.questionString =question.get(0).getAsObject().get("string").toString().trim().replace("\"", "");
+				this.lang = question.get(0).getAsObject().get("language").toString().trim().replace("\"", "");
 				
-				this.setQuestionString(this.questionString, lang);
+				this.setQuestionString(this.questionString, this.lang);
 			}
 		}
 		
 		if(this.questionObject.hasKey("id"))
 			this.setID(Integer.parseInt(this.questionObject.get("id").toString()));
 		
-		if(this.questionObject.hasKey("query"))
-			this.setQuery(this.questionObject.get("query").getAsObject().get("sparql").toString());
+		if(this.questionObject.hasKey("query")) {
+			JsonObject query = this.questionObject.get("query").getAsObject();
+			if(query.hasKey("sparql"))
+				this.setQuery(query.get("sparql").toString());
+			
+			if(query.hasKey("NumberOfTriples")) {
+				this.triple = Integer.parseInt(this.questionObject.get("query").getAsObject().get("NumberOfTriples").toString());
+				this.setTriple(this.triple);
+			}
+		}
+		// Add other props
 	}
 	
 	/**
@@ -87,12 +98,36 @@ public class QaldBuilder {
 	 */
 	public void setQuery(String query) {
 		query = query.trim().replace("\"", "");
-		this.removeQuery();
 		this.jsonBuilder.startObject().key("sparql").value(query).finishObject();
 		this.questionObject.put("query", this.jsonBuilder.build());
 		this.query=query;
 	}
 	
+	public void setTriple(int triple) {
+		if(this.questionObject.hasKey("query")) {
+			this.questionObject.get("query").getAsObject().put("NumberOfTriples", triple);
+			this.triple = triple;
+		}
+	}
+	
+	/**
+	 * Set query with triple
+	 * @param query
+	 * @param triple
+	 */
+	public void setQuery(String query,int triple) {
+		this.setQuery(query);
+		this.setTriple(triple);	
+	}
+	/**
+	 * 
+	 */
+	public void removeTriple() {
+		if(this.questionObject.get("query").getAsObject().hasKey("NumberOfTriples")) {
+			this.questionObject.get("query").getAsObject().remove("NumberOfTriples");
+			this.triple =-1;
+		}
+	}
 	/**
 	 * Set answer as Json object
 	 * @param answers
@@ -187,8 +222,9 @@ public class QaldBuilder {
 	}
 	
 	public void removeQuery() {
-		if(this.questionObject.hasKey("query"))
+		if(this.questionObject.hasKey("query")) {
 			this.questionObject.remove("query");
+		}
 	}
 	
 	public void removeAnswers() {
@@ -268,5 +304,11 @@ public class QaldBuilder {
 		this.qaldFormat.get("questions").getAsArray().clear();
 		this.qaldFormat.get("questions").getAsArray().add(this.questionObject);
 		return this.qaldFormat.toString();
+	}
+	/**
+	 * @return the triple
+	 */
+	public int getTriple() {
+		return this.triple;
 	}
 }
