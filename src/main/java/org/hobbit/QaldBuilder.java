@@ -164,6 +164,7 @@ public class QaldBuilder {
 	 * @param language
 	 */
 	public void setQuestionString(String question,String language) {
+		question=question.trim().replace("\"", "");
 		language=language.trim().replace("\"", "");
 		if(this.questionObject.hasKey("question"))
 			this.questionObject.remove("question");
@@ -299,10 +300,10 @@ public class QaldBuilder {
 	 * Get all question info as Qald format
 	 * @return Qald formated question
 	 */
-	public String getQaldQuestion() {
+	public JsonObject getQaldQuestion() {
 		this.qaldFormat.get("questions").getAsArray().clear();
 		this.qaldFormat.get("questions").getAsArray().add(this.questionObject);
-		return this.qaldFormat.toString();
+		return this.qaldFormat;
 	}
 	/**
 	 * @return the triple
