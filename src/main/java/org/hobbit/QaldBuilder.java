@@ -69,8 +69,11 @@ public class QaldBuilder {
 		if(this.questionObject.hasKey("question")) {
 			JsonArray question = this.questionObject.get("question").getAsArray();
 			if(!question.isEmpty()) {
-				this.questionString =question.get(0).getAsObject().get("string").toString().trim().replace("\"", "");
-				this.lang = question.get(0).getAsObject().get("language").toString().trim().replace("\"", "");
+				this.questionString =question.get(0).getAsObject().get("string").toString().trim();
+				this.questionString = this.questionString.substring(1, this.questionString.length()-1);
+				
+				this.lang = question.get(0).getAsObject().get("language").toString().trim();
+				this.lang = this.lang.substring(1, this.lang.length()-1);
 				
 				this.setQuestionString(this.questionString, this.lang);
 			}
@@ -94,7 +97,8 @@ public class QaldBuilder {
 	 * @param query
 	 */
 	public void setQuery(String query) {
-		query = query.trim().replace("\"", "");
+		query = query.trim();
+		query = query.substring(1, query.length() -1);
 		this.jsonBuilder.startObject().key("sparql").value(query).finishObject();
 		this.questionObject.put("query", this.jsonBuilder.build());
 		this.query=query;
@@ -164,8 +168,10 @@ public class QaldBuilder {
 	 * @param language
 	 */
 	public void setQuestionString(String question,String language) {
-		question=question.trim().replace("\"", "");
-		language=language.trim().replace("\"", "");
+		question=question.trim();
+		question = question.substring(1, question.length() -1);
+		language=language.trim();
+		language = language.substring(1, language.length()-1);
 		if(this.questionObject.hasKey("question"))
 			this.questionObject.remove("question");
 		jsonBuilder.startArray().startObject()
@@ -179,7 +185,8 @@ public class QaldBuilder {
 	
 	
 	public void setHybrid(String value) {
-		value = value.trim().replace("\"", "");
+		value = value.trim();
+		value = value.substring(1, value.length() -1);
 		if(this.questionObject.hasKey("hybrid"))
 			this.questionObject.remove("hybrid");
 		this.questionObject.put("hybrid", value);
@@ -213,7 +220,8 @@ public class QaldBuilder {
 	 * @param id
 	 */
 	public void setDatasetID(String id) {
-		id=id.trim().replace("\"", "");
+		id=id.trim();
+		id = id.substring(1, id.length()-1);
 		if(this.qaldFormat.hasKey("dataset"))
 			if(this.qaldFormat.get("dataset").getAsObject().hasKey("id"))
 				this.qaldFormat.get("dataset").getAsObject().remove("id");
