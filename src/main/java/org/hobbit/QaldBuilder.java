@@ -315,7 +315,7 @@ public class QaldBuilder {
 	 * Get all question info as Qald format
 	 * @return Qald formated question
 	 */
-	public JsonObject getQaldQuestion() {
+	public JsonObject getQuestionAsQald() {
 		this.qaldFormat.get("questions").getAsArray().clear();
 		this.qaldFormat.get("questions").getAsArray().add(this.questionObject);
 		return this.qaldFormat;
@@ -325,5 +325,8 @@ public class QaldBuilder {
 	 */
 	public int getTriple() {
 		return this.triple;
+	}
+	public JsonObject getQuestionAsJson() {
+		return this.questionObject;
 	}
 }
