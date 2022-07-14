@@ -1,6 +1,7 @@
 
+# QaldBuilder
+## QaldBuilder is a class to handle qald question format easily.
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-# QaldBuilder is a class to handle qald question format easily.
 
 ## How to use it with maven:
 
